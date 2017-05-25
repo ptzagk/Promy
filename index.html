@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Upperux</title>
+</head>
+<body>
+    <h1 id="view-total">
+        0
+    </h1>
+    <button onclick="store.emit({type:'ADD',value:5})">
+        Sumar 5
+    </button>
+    <button onclick="store.emit({type:'RES',value:5})">
+        Restar 5
+    </button>
+    <script src="src/Upperux.min.js"></script>
+    <script>
+        var store = new Upperux(0);
+
+        store.middleware((store,action,next)=>{
+            console.info(action)
+            return next(store,action);
+        })
+
+        store.action({
+            ADD(state,{value}){
+                return state + value;
+            },
+            RES(state,{value}){
+                return state - value;
+            }
+        })
+
+        store.on((state)=>{
+            document.querySelector('#view-total').textContent = state;
+        })
+    </script>
+</body>
+</html>
