@@ -17,69 +17,98 @@ function Upperux(state = {},actions){
     this.action(actions);
 }
 Upperux.prototype = {
-    action(actions,fn){
-        if(typeof actions == 'object'){
-            Object.keys(actions).map((action)=>this.action(action,actions[action]))
-        }else{
-            this.actions[actions] = fn;
-        }    
-        return this;
-    },
-    middleware(fn){
-        this.mdd = this.mdd.concat(fn);
-    },
-    toPromise(value){
+    $toPromise(value){
         return value instanceof Promise ? value: Promise.resolve(value);
     },
-    cycle(state,list,action){
+    $cycle(state,list,action){
         return state.then((state)=>{
             var cursor = list.shift();
             if(cursor){
-                return cursor(state,action,(state,action)=>this.cycle(this.toPromise(state),list.slice(),action))
+                return cursor(state,action,(state,action)=>this.$cycle(this.$toPromise(state),list.slice(),action))
             }   
         })
     },
-    emit(action){
-        return new Promise((resolve,reject)=>{
-            var from  = action.type,
-            mdd = this.mdd.concat(
-                (state,action)=>this.actions[action.type] ? this.actions[action.type](state,action) : (
-                    this.actions.default ? this.actions.default(state,action) : state
-                )
-            ),
-            cycle = this.cycle(
-                this.toPromise(this.state),
-                mdd,action
-            );
-            cycle.then((state)=>{
-                this.state = state;
-                this.ons   = this.ons.filter((fn)=>{
-                    try{
-                        return !fn(state,from);
-                    }catch(e){
-
-                    }
+    $dispatch(action){
+        return new Promise(
+            (resolve,reject)=>{
+                var from  = action.type,
+                mdd = this.mdd.concat(
+                    (state,action)=>this.actions[action.type] ? this.actions[action.type](state,action) : (
+                        this.actions.default ? this.actions.default(state,action) : state
+                    )
+                ),
+                cycle = this.$cycle(
+                    this.$toPromise(this.state),
+                    mdd,action
+                );
+                cycle.then((state)=>{
+                    this.state = state;
+                    this.ons.map((fn)=>{
+                        try{
+                            fn(state,from);
+                        }catch(e){
+                                
+                        }
+                    })
+                    resolve(state);
                 })
-                resolve(state);
-            })
-            cycle.catch(reject)
-        })
+                cycle.catch(reject)
+            }
+        )
     },
-    get(str){
-        if(str && (!/[\(\)\`\s\t\n]+/.test(str))){
-            str = str.replace(/^(\w)/,(str)=>'.'+str);
-            return (new Function(`try{return this${str}}catch(e){return}`)).call(this.state);
+    get action(){
+        return (actions,fn)=>{
+            if(typeof actions == 'object'){
+                Object.keys(actions).map((action)=>this.action(action,actions[action]))
+            }else{
+                this.actions[actions] = fn;
+            }    
+            return this;
+        }    
+    },
+    get middleware(){
+        return (fn)=>{
+            this.mdd = this.mdd.concat(fn);
+            return this;
+        }    
+    },
+    get dispatch(){
+        return (action)=>{
+            if(action instanceof Function){
+                return this.emit(action(this.state));
+            }else if(action instanceof Promise){
+                return action.then((action)=>this.emit(action));
+            }else{
+                try{
+                    action.type;
+                    return this.$dispatch(action);
+                }catch(e){
+                    console.error('Error in emit Action\nAction type is undefined\n',e);
+                }
+            }
         }
-        return this.state;
     },
-    off(fn){
-        var pos = this.ons.indexOf(fn);
-        pos > -1 && this.onts.splice(pos,1);
-        return this;
+    get get(){
+        return (str)=>{
+            if(str && (!/[\(\)\`\s\t\n]+/.test(str))){
+                str = str.replace(/^(\w)/,(str)=>'.'+str);
+                return (new Function(`try{return this${str}}catch(e){return}`)).call(this.state);
+            }
+            return this.state;
+        }    
     },
-    on(fn){
-        fn && this.ons.push(fn);
-        return this;
+    get unsubscribe(){
+        return (fn)=>{
+            var pos = this.ons.indexOf(fn);
+            pos > -1 && this.onts.splice(pos,1);
+            return this;
+        }    
+    },
+    get subscribe(){
+        return (fn)=>{
+            fn && this.ons.push(fn);
+            return this;
+        }    
     }
 }
     

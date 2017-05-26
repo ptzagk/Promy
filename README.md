@@ -16,11 +16,11 @@ Permite gestionar estados asíncronos dentro de una aplicación aprovechando el 
 
 Primero quiero recordar que cree Upperux entendiendo que todo evento generado dentro de una aplicación en su mayoría son **ASINCRONO** (Llamadas al servidor, eventos del cliente, animaciones e intervalos de tiempo). para ello Upperux ofrece una interfaz simple, compuesta por 4 métodos de interacción para gestionar esta asincronia.
 
-* **action** : permite definir las acciones del store
-* **middleware** : permite definir middleware que se ejecutan al lanzar una acción
-* **emit**  : permite emitir acciones al store
-* **on**  : permite subscrivirce ante los cambios del store
-* **off** : permite eliminar la subcripcion a los cambios del store
+* **action**      : permite definir las acciones del store
+* **middleware**  : permite definir middleware que se ejecutan al lanzar una acción
+* **dispatch**    : permite emitir acciones al store
+* **subscribe**   : permite subscrivirce ante los cambios del store
+* **unsubscribe** : permite eliminar la subcripcion a los cambios del store
 
 #### Implementando Upperux
 
@@ -43,7 +43,7 @@ store.action({
   }
 })
 
-store.on((state)=>{
+store.subscribe((state)=>{
   document.querySelector('#view-total').textContent = state;
 })
 

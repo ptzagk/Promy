@@ -14,15 +14,25 @@
     <button onclick="store.emit({type:'RES',value:5})">
         Restar 5
     </button>
-    <script src="src/Upperux.min.js"></script>
+    <script src="src/Upperux.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/riot@3.5/riot+compiler.min.js"></script>
+    
+    <app on={store.subscribe}>
+        {console.log(state)}
+    </app>
+    
+    <script type="riot/tag" src="app.tag"></script>
     <script>
-        var store = new Upperux(0);
-
-        store.middleware((store,action,next)=>{
-            console.info(action)
-            return next(store,action);
-        })
-
+        
+        var store      = new Upperux(0);
+        store.middleware([
+            (store,action,next)=>{
+                return next(store,action);
+            },
+            (store,action,next)=>{
+                return next(store,action);
+            }
+        ])
         store.action({
             ADD(state,{value}){
                 return state + value;
@@ -31,10 +41,10 @@
                 return state - value;
             }
         })
-
-        store.on((state)=>{
+        store.subscribe((state)=>{
             document.querySelector('#view-total').textContent = state;
         })
+        riot.mount('app')
     </script>
 </body>
 </html>
