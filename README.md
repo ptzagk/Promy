@@ -6,9 +6,7 @@ Sumamente ligero
 
 | formato       | tamaño    |
 | ------------- | --------- |
-| Uncompress    | 2.51kb    |
-| Compress      | 1.33kb    |
-| Gzip-Compress | 643 bytes |
+| Uncompress    | 3.74kb    |
 
 Permite gestionar estados asíncronos dentro de una aplicación aprovechando el estándar de las promesas
 

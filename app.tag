@@ -3,6 +3,6 @@
         <yield></yield>
     </div>
     <script>
-        opts.on((state)=>this.update({state}))
+        opts.subscribe((state)=>this.update({state}))
     </script>
 </app>
