@@ -8,10 +8,10 @@
     <h1 id="view-total">
         0
     </h1>
-    <button onclick="store.emit({type:'ADD',value:5})">
+    <button onclick="store.dispatch({type:'ADD',value:5})">
         Sumar 5
     </button>
-    <button onclick="store.emit({type:'RES',value:5})">
+    <button onclick="store.dispatch({type:'RES',value:5})">
         Restar 5
     </button>
     <script src="src/Upperux.js"></script>
@@ -25,6 +25,7 @@
     <script>
         
         var store      = new Upperux(0);
+        
         store.middleware([
             (store,action,next)=>{
                 return next(store,action);
@@ -33,6 +34,7 @@
                 return next(store,action);
             }
         ])
+        
         store.action({
             ADD(state,{value}){
                 return state + value;
@@ -41,9 +43,13 @@
                 return state - value;
             }
         })
+        
+             
+        
         store.subscribe((state)=>{
             document.querySelector('#view-total').textContent = state;
         })
+        
         riot.mount('app')
     </script>
 </body>

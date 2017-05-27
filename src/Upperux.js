@@ -10,11 +10,12 @@
 * @method get(str)       - get state 
 **/   
 function Upperux(state = {},actions){
-    this.state   = state;
-    this.ons     = []
-    this.mdd     = [];
-    this.actions = {};
-    this.action(actions);
+    this.state         = state
+    this.childs        = {} // child
+    this.actions       = {} // actions
+    this.subscribers   = [] // subscribe
+    this.middlewares   = [] // middleware
+    this.action(actions)
 }
 Upperux.prototype = {
     $toPromise(value){
@@ -28,39 +29,66 @@ Upperux.prototype = {
             }   
         })
     },
-    $dispatch(action){
+    $dispatch(action,opts){
         return new Promise(
             (resolve,reject)=>{
-                var from  = action.type,
-                mdd = this.mdd.concat(
-                    (state,action)=>this.actions[action.type] ? this.actions[action.type](state,action) : (
-                        this.actions.default ? this.actions.default(state,action) : state
-                    )
-                ),
+                var mdd = this.middlewares.concat([
+                    (state,action,next)=>{
+                        var fn  = this.actions[action.type] || this.actions.default;
+                        return next(
+                            fn ? fn(state,action) : state,
+                            action
+                        );
+                    },
+                    (state,action)=>this.$dispatchChilds(state,action,opts)
+                ]),
                 cycle = this.$cycle(
                     this.$toPromise(this.state),
                     mdd,action
                 );
                 cycle.then((state)=>{
                     this.state = state;
-                    this.ons.map((fn)=>{
-                        try{
-                            fn(state,from);
-                        }catch(e){
-                                
-                        }
-                    })
+                    this.$dispatchSubscribers(state,action,opts);
                     resolve(state);
                 })
                 cycle.catch(reject)
             }
         )
     },
+    $dispatchSubscribers(state,action,opts={}){
+        this.subscribers.map((fn)=>{
+            try{
+                fn(state,action,opts);
+            }catch(e){
+                
+            }
+        })
+    },
+    $dispatchChilds(state,action,opts){
+        var childs = this.childs,
+            index  = Object.keys(childs);
+        return  Promise.all(
+            index.map((child)=>{
+                return childs[child].dispatch(action,{skipStore : childs[child]})
+                                    .then((childState)=>{
+                                        state[child] = childState;
+                                    })
+            })
+        ).then(()=>state)
+    },
+    child(prop,store){
+        this.state[prop]  = store.state;
+        this.childs[prop] = store;
+        store.subscribe((state,action,opts)=>{
+            this.state[prop]  = state;
+            if(opts.skipStore != store)this.$dispatchSubscribers(this.state,action);
+        })
+    },
     get action(){
         return (actions,fn)=>{
             if(typeof actions == 'object'){
                 Object.keys(actions).map((action)=>this.action(action,actions[action]))
-            }else{
+            }else if(actions && fn){
                 this.actions[actions] = fn;
             }    
             return this;
@@ -68,20 +96,20 @@ Upperux.prototype = {
     },
     get middleware(){
         return (fn)=>{
-            this.mdd = this.mdd.concat(fn);
+            this.middlewares = this.middlewares.concat(fn);
             return this;
         }    
     },
     get dispatch(){
-        return (action)=>{
+        return (action,opts)=>{
             if(action instanceof Function){
-                return this.emit(action(this.state));
+                return this.dispatch(action(this.state));
             }else if(action instanceof Promise){
-                return action.then((action)=>this.emit(action));
+                return action.then((action)=>this.dispatch(action));
             }else{
                 try{
                     action.type;
-                    return this.$dispatch(action);
+                    return this.$dispatch(action,opts);
                 }catch(e){
                     console.error('Error in emit Action\nAction type is undefined\n',e);
                 }
@@ -89,24 +117,18 @@ Upperux.prototype = {
         }
     },
     get get(){
-        return (str)=>{
-            if(str && (!/[\(\)\`\s\t\n]+/.test(str))){
-                str = str.replace(/^(\w)/,(str)=>'.'+str);
-                return (new Function(`try{return this${str}}catch(e){return}`)).call(this.state);
-            }
-            return this.state;
-        }    
+        return ()=>this.state;    
     },
     get unsubscribe(){
         return (fn)=>{
-            var pos = this.ons.indexOf(fn);
+            var pos = this.subscribers.indexOf(fn);
             pos > -1 && this.onts.splice(pos,1);
             return this;
         }    
     },
     get subscribe(){
         return (fn)=>{
-            fn && this.ons.push(fn);
+            fn && this.subscribers.push(fn);
             return this;
         }    
     }

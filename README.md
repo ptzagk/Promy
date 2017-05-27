@@ -4,11 +4,11 @@
 
 Sumamente ligero
 
-| formato       | tamaño    |
-| ------------- | --------- |
-| Uncompress    | 3.74kb    |
+| formato    | tamaño |
+| ---------- | ------ |
+| Uncompress | 3.74kb |
 
-Permite gestionar estados asíncronos dentro de una aplicación aprovechando el estándar de las promesas
+Permite gestionar estados asíncronos dentro de una aplicación aprovechando el potencial de las **promesas** y las ideas de  **Redux** sobre **Flux**
 
 #### Primeros pasos
 
@@ -19,8 +19,9 @@ Primero quiero recordar que cree Upperux entendiendo que todo evento generado de
 * **dispatch**    : permite emitir acciones al store
 * **subscribe**   : permite subscrivirce ante los cambios del store
 * **unsubscribe** : permite eliminar la subcripcion a los cambios del store
+* **child** : Permite generar un hijo que emite al padre cambios propies de su estado.
 
-#### Implementando Upperux
+#### Implementando Upperux ejemplo 1
 
 Este ejemplo manifiesta un manejo de store simple basado en un contador.
 
@@ -45,16 +46,33 @@ store.subscribe((state)=>{
   document.querySelector('#view-total').textContent = state;
 })
 
-
 ```
+#### Explicando el ejemplo 1
+
+#### Constructor Upperux
+Este permite instanciar un store, este posee un estado propio y a su vez se puede controlar el estado del médiate acciones.
+
+* @param {Object}  - es el estado inicial del store
+
+
+* @param {Object}  - Opcional, acciones iniciales del store 
 
 #### Middleware
 
-El potencial de Upperux, es el manejo de middleware, mediante promesas, estos pueden cambiar el estado del store y el action. A su vez pueden escuchar el retorno del ciclo.
+Este método perteneciente al store permite definirun middleware para el mismo store, este recibe una función, que al serejecutada por el store le entregara 3 parámetros 
 
-Lo ideal es que este estado y el action sean **inmutables** ante el ciclo de ejecución.
+* @param {Object} - es estado del store
+* @param {Object} - el action  emitido por el dispatch
+* @param {Function} - función que permite continuar el proceso
 
 #### Action
 
 Permiten gestionar un cambio de estado en base a un tipo específico de acción, si por defecto el action no se encuentra definido se emitirá el action **default**
 
+#### Child
+
+Permite generar propiedades pertenecientes al store, pero estas son a su vez sub instancias de **Upperux**, similar a como opera **combinerReduce** en redux, pero este es **asincrono**
+
+#### Subscribe
+
+Permite suscribirse a los estados del store, este recibe una función que al ser ejecutada recibirá 2 parámetros el estado del store y el actino que modifico el estado.
