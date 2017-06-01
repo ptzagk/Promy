@@ -14,41 +14,35 @@
     <button onclick="store.dispatch({type:'RES',value:5})">
         Restar 5
     </button>
-    <script src="src/Upperux.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/riot@3.5/riot+compiler.min.js"></script>
-    
-    <app subscribe={store.subscribe}>
-        {console.log(state)}
-    </app>
-    
-    <script type="riot/tag" src="app.tag"></script>
+    <script src="src/Promy.js"></script>
     <script>
+        /*** 
+        STORE PADRE
+        **/
+        var store      = new Promy(0);
         
-        var store      = new Upperux(0);
-        
-        store.middleware([
-            (store,action,next)=>{
-                return next(store,action);
-            },
-            (store,action,next)=>{
-                return next(store,action);
-            }
-        ])
-        
-        store.action({
-            ADD(state,{value}){
-                return state + value;
-            },
-            RES(state,{value}){
-                return state - value;
-            }
+        store.middleware((state,action,next)=>{
+            return next(state,action);
         })
         
-             
+        store.action((state,{type,value})=>{
+            switch(type){
+                case 'ADD':
+                    state = state + value;
+                break;
+                case 'RES':
+                    state = state - value;
+                break;
+            }
+            return state;
+        })
         
         store.subscribe((state)=>{
             document.querySelector('#view-total').textContent = state;
         })
+        
+        
+        store.dispatch({type:'ADD',value:500})
         
         riot.mount('app')
     </script>

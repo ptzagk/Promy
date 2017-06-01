@@ -9,7 +9,7 @@
 * @method on(fn)         - subscribe to store
 * @method get(str)       - get state 
 **/   
-function Upperux(state = {},actions){
+function Promy(state = {},actions){
     this.state         = state
     this.childs        = {} // child
     this.actions       = {} // actions
@@ -17,7 +17,7 @@ function Upperux(state = {},actions){
     this.middlewares   = [] // middleware
     this.action(actions)
 }
-Upperux.prototype = {
+Promy.prototype = {
     $toPromise(value){
         return value instanceof Promise ? value: Promise.resolve(value);
     },
@@ -60,7 +60,9 @@ Upperux.prototype = {
             try{
                 fn(state,action,opts);
             }catch(e){
-                
+                /**
+                debug error 
+                **/
             }
         })
     },
@@ -76,21 +78,30 @@ Upperux.prototype = {
             })
         ).then(()=>state)
     },
-    child(prop,store){
-        this.state[prop]  = store.state;
-        this.childs[prop] = store;
-        store.subscribe((state,action,opts)=>{
-            this.state[prop]  = state;
-            if(opts.skipStore != store)this.$dispatchSubscribers(this.state,action);
-        })
+    get child(){
+       return (prop,store)=>{
+            this.state[prop]  = store.state;
+            this.childs[prop] = store;
+            store.subscribe((state,action,opts)=>{
+                this.state[prop]  = state;
+                if(opts.skipStore != store)this.$dispatchSubscribers(this.state,action);
+            })
+            return this;
+       }
     },
     get action(){
         return (actions,fn)=>{
-            if(typeof actions == 'object'){
-                Object.keys(actions).map((action)=>this.action(action,actions[action]))
-            }else if(actions && fn){
-                this.actions[actions] = fn;
-            }    
+            switch(typeof actions){
+                case 'object':
+                    Object.keys(actions).map((action)=>this.action(action,actions[action]))
+                break;
+                case 'string':
+                    this.actions[actions] = fn;
+                break;
+                case 'function':
+                    this.actions.default  = actions;
+                break;
+            }
             return this;
         }    
     },
@@ -135,7 +146,7 @@ Upperux.prototype = {
 }
     
 typeof module !== 'undefined' && module.exports ? 
-                 (module.exports  = Upperux) : 
-                 (root.Upperux    = Upperux)
+                 (module.exports  = Promy) : 
+                 (root.Promy      = Promy)
     
 })(this)

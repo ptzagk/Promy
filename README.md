@@ -1,4 +1,4 @@
-## Upperux
+## Promy
 
 [Escrito por Matias Trujillo  Olivares](http://www.upp.cl)	
 
@@ -12,7 +12,7 @@ Permite gestionar estados asíncronos dentro de una aplicación aprovechando el 
 
 #### Primeros pasos
 
-Primero quiero recordar que cree Upperux entendiendo que todo evento generado dentro de una aplicación en su mayoría son **ASINCRONO** (Llamadas al servidor, eventos del cliente, animaciones e intervalos de tiempo). para ello Upperux ofrece una interfaz simple, compuesta por 4 métodos de interacción para gestionar esta asincronia.
+Primero quiero recordar que cree Promy entendiendo que todo evento generado dentro de una aplicación en su mayoría son **ASINCRONO** (Llamadas al servidor, eventos del cliente, animaciones e intervalos de tiempo). para ello Promy ofrece una interfaz simple, compuesta por 4 métodos de interacción para gestionar esta asincronia.
 
 * **action**      : permite definir las acciones del store
 * **middleware**  : permite definir middleware que se ejecutan al lanzar una acción
@@ -21,12 +21,12 @@ Primero quiero recordar que cree Upperux entendiendo que todo evento generado de
 * **unsubscribe** : permite eliminar la subcripcion a los cambios del store
 * **child** : Permite generar un hijo que emite al padre cambios propies de su estado.
 
-#### Implementando Upperux ejemplo 1
+#### Implementando Promy ejemplo 1
 
 Este ejemplo manifiesta un manejo de store simple basado en un contador.
 
 ```javascript
-var store = new Upperux(0);
+var store = new Promy(0);
 
 store.middleware((store,action,next)=>{
   console.log(action)
@@ -49,7 +49,7 @@ store.subscribe((state)=>{
 ```
 #### Explicando el ejemplo 1
 
-#### Constructor Upperux
+#### Constructor Promy
 Este permite instanciar un store, este posee un estado propio y a su vez se puede controlar el estado del médiate acciones.
 
 * @param {Object}  - es el estado inicial del store
@@ -71,7 +71,7 @@ Permiten gestionar un cambio de estado en base a un tipo específico de acción,
 
 #### Child
 
-Permite generar propiedades pertenecientes al store, pero estas son a su vez sub instancias de **Upperux**, similar a como opera **combinerReduce** en redux, pero este es **asincrono**
+Permite generar propiedades pertenecientes al store, pero estas son a su vez sub instancias de **Promy**, similar a como opera **combinerReduce** en redux, pero este es **asincrono**
 
 #### Subscribe
 
