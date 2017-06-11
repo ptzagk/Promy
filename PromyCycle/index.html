@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+      <script src="src/PromyCycle.js"></script>
+      <script>
+        /**
+        * Instance to PromyCycle
+        */
+        var cycle = PromyCycle(); 
+
+        cycle
+        /**
+        * Limit the number of cycle of execution
+        */
+        .line(1)
+        /**
+        * Controls continuity based on an analysis of the argument
+        */
+        .when((argument)=>argument)
+        /**
+        * Defines a maximum waiting time for the cycle
+        */
+        .timeout(300)
+        /**
+        * Wait x time before moving to the next checkpoint
+        */
+        .delay(300)
+        /**
+        * Allows you to control the cycle
+        */
+        .middleware(({next,resolve},argument)=>{
+            Promise
+            .all([
+                next(argument),
+                next(argument),
+                next(argument),
+            ])
+            .then(resolve)
+        })
+        /**
+        * Control cycle feedback
+        */
+        .next(()=>{
+            return {for:'next'}
+        })
+        /**
+        * Read the cycle return but is not expected by the
+        */
+        .bind((argument)=>{
+            console.log(argument)
+        })
+        /**
+        * Subscribe to cyclo if this ends
+        */ 
+        .subscribe(()=>{
+            console.log('done');
+        })
+        /**
+        * Triggers the execution of the cycle
+        * This returns a promise that is resolved 
+        * at the end of the cycle
+        */ 
+        .dispatch({
+            name : 'matias'
+        })
+        .then(()=>{
+            console.log('end');
+        })
+
+        
+
+        
+        
+
+        /**
+        cycle(function *(){
+            yield debounce(300)
+            console.log('300ms seg after')
+            yield debounce(600)
+            console.log('900ms seg after')
+        })
+        **/
+      </script>
+
+      <code>
+</code>
+
+</body>
+</html>
