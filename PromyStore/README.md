@@ -1,32 +1,27 @@
-## PromyState
+## PromyStore
 
 [Escrito por Matias Trujillo  Olivares](http://www.upp.cl)	
 
-Sumamente ligero
 
-| formato    | tamaño |
-| ---------- | ------ |
-| Uncompress | 3.74kb |
+Allows you to manage asynchronous states within an application by leveraging the potential of **promises** and **Redux** ideas on **Flux**. This tool perfectly complements [Escrito por Matias Trujillo  Olivares](PromyCycle)	
 
-Permite gestionar estados asíncronos dentro de una aplicación aprovechando el potencial de las **promesas** y las ideas de  **Redux** sobre **Flux**
+#### First steps
 
-#### Primeros pasos
+First I want to remember that you create PromyStore by understanding that all events generated within an application are mostly **ASYNCHRONIZED** (Server calls, client events, animations and time intervals). For this, PromyStore offers a simple interface, composed of 4 interaction methods to manage this asynchrony.
 
-Primero quiero recordar que cree PromyState entendiendo que todo evento generado dentro de una aplicación en su mayoría son **ASINCRONO** (Llamadas al servidor, eventos del cliente, animaciones e intervalos de tiempo). para ello PromyState ofrece una interfaz simple, compuesta por 4 métodos de interacción para gestionar esta asincronia.
+* **action**      : Allows you to define store actions
+* **middleware**  : Define middleware that runs when launching an action
+* **dispatch**    : Allows to issue shares to the store
+* **subscribe**   : Subscribe to store changes
+* **unsubscribe** : Allows you to unsubscribe from store changes
+* **child** : It allows you to generate a child that issues the father changes of his own state.
 
-* **action**      : permite definir las acciones del store
-* **middleware**  : permite definir middleware que se ejecutan al lanzar una acción
-* **dispatch**    : permite emitir acciones al store
-* **subscribe**   : permite subscrivirce ante los cambios del store
-* **unsubscribe** : permite eliminar la subcripcion a los cambios del store
-* **child** : Permite generar un hijo que emite al padre cambios propies de su estado.
+#### Implementing PromyStore Example 1
 
-#### Implementando PromyState ejemplo 1
-
-Este ejemplo manifiesta un manejo de store simple basado en un contador.
+This example demonstrates a simple storage based on a counter.
 
 ```javascript
-var store = new PromyState(0);
+var store = new PromyStore(0);
 
 store.middleware((store,action,next)=>{
   console.log(action)
@@ -47,32 +42,24 @@ store.subscribe((state)=>{
 })
 
 ```
-#### Explicando el ejemplo 1
-
-#### Constructor PromyState
-Este permite instanciar un store, este posee un estado propio y a su vez se puede controlar el estado del médiate acciones.
-
-* @param {Object}  - es el estado inicial del store
-
-
-* @param {Object}  - Opcional, acciones iniciales del store 
+#### Explaining Example 1
 
 #### Middleware
 
-Este método perteneciente al store permite definirun middleware para el mismo store, este recibe una función, que al serejecutada por el store le entregara 3 parámetros 
+This method pertaining to the store allows to define a middleware for the same store, this one receives a function, that to the sold by the store will give 3 parameters
 
-* @param {Object} - es estado del store
-* @param {Object} - el action  emitido por el dispatch
-* @param {Function} - función que permite continuar el proceso
+* @param {Object} - It's store status
+* @param {Object} - The action issued by the dispatcher
+* @param {Function} - Function that allows to continue the process, this returns a promise
 
 #### Action
 
-Permiten gestionar un cambio de estado en base a un tipo específico de acción, si por defecto el action no se encuentra definido se emitirá el action **default**
+They allow to manage a state change based on a specific type of action, if by default the action is not defined, the action will be issued ** default **
 
 #### Child
 
-Permite generar propiedades pertenecientes al store, pero estas son a su vez sub instancias de **PromyState**, similar a como opera **combinerReduce** en redux, pero este es **asincrono**
+It allows to generate properties belonging to the store, but these are in turn sub instances of **PromyStore**, similar to how it operates **combinerReduce** in redux, but this is **asynchronous**
 
 #### Subscribe
 
-Permite suscribirse a los estados del store, este recibe una función que al ser ejecutada recibirá 2 parámetros el estado del store y el actino que modifico el estado.
+It allows to subscribe to the states of the store, this receives a function that when executed will receive 2 parameters store state and actin modifying the state.

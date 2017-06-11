@@ -1,5 +1,7 @@
 ## PromyCycle
 
+[Escrito por Matias Trujillo  Olivares](http://www.upp.cl)	
+
 It is a library for asynchronous management, it will be useful for the control of calls to the server, worker or others It has by default a series of frequently used utilities at the moment of managing processing asynchronous
 
 #### Example
