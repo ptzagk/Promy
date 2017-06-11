@@ -3,7 +3,7 @@
 [Escrito por Matias Trujillo  Olivares](http://www.upp.cl)	
 
 
-Allows you to manage asynchronous states within an application by leveraging the potential of **promises** and **Redux** ideas on **Flux**. This tool perfectly complements [PromyCycle](../PromyCycle)	
+Allows you to manage asynchronous states within an application by leveraging the potential of **promises** and **Redux** ideas on **Flux**. This tool perfectly complements [PromyCycle](https://github.com/UpperCod/Promy/tree/master/PromyCycle)	
 
 #### First steps
 
